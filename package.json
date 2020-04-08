@@ -1,0 +1,25 @@
+{
+  "name": "angular-hmr-configurator",
+  "version": "1.0.1",
+  "description": "Script for configure Angular project to work with HMR, based on https://dev.to/ctrleffive/hot-module-replacement-in-angular-2ckl with some changes",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PiosDamian/angular-hmr-configurator"
+  },
+  "keywords": [
+    "angular",
+    "hmr"
+  ],
+  "author": "Damian Pioś",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PiosDamian/angular-jest-config/issues"
+  },
+  "homepage": "https://github.com/PiosDamian/angular-hmr-configurator#readme",
+  "devDependencies": {},
+  "dependencies": {},
+  "bin": {
+    "angular-hmr-configurator": "index.js"
+  }
+}
