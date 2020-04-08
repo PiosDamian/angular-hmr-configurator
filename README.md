@@ -1,6 +1,7 @@
 ## Script for configure angular project to work with HMR.
 
 It's install `@angularclass/hmr`, creates basic files, updates `angular.json`,
+It's also rewrite `src/main.ts`, so if you customized this file make sure to re-customize it.
 
 Usage:
 

@@ -80,7 +80,7 @@ const updateMainTs = () => {
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { environment } from './environments/environment';
 import { hmrBootstrap } from './hmr';
-import { RootModule } from './app/root/root.module';
+import { AppModule } from './app/app.module';
 
 const bootstrap = () => platformBrowserDynamic().bootstrapModule(AppModule);
 
@@ -94,7 +94,7 @@ if (environment.production) {
     console.error('HMR is not enabled for webpack-dev-server!');
     console.log('Are you using the --hmr flag for ng serve?');
   }
-}`);
+};`);
         process.stdout.write('\nFile src/main.ts created');
     } catch (err) {
         process.stderr.write('\nProblem with updating file src/main.ts');
