@@ -65,7 +65,8 @@ export const hmrBootstrap = (
     ngModule.destroy();
     makeVisible();
   });
-};`);
+};
+`);
         process.stdout.write('\nFile src/hmr.ts created');
     } catch (err) {
         process.stderr.write('\nProblem with creating file src/hmr.ts');
