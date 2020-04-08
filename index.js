@@ -94,7 +94,8 @@ if (environment.production) {
     console.error('HMR is not enabled for webpack-dev-server!');
     console.log('Are you using the --hmr flag for ng serve?');
   }
-};`);
+}
+`);
         process.stdout.write('\nFile src/main.ts created');
     } catch (err) {
         process.stderr.write('\nProblem with updating file src/main.ts');
