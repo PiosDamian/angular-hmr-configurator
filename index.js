@@ -4,51 +4,51 @@ const { exec } = require('child_process');
 const fs = require('fs');
 
 const main = async () => {
-    await execCommands();
-    createFiles();
+  await execCommands();
+  createFiles();
 
-    updateMainTs();
+  updateMainTs();
 
-    updateAngular();
+  updateAngular();
 
-    updateTsConfigApp();
-}
-
-const execCommands = () => {
-    return execCommandPromise('npm i --save-dev @angularclass/hmr');
+  updateTsConfigApp();
 };
 
-const execCommandPromise = (command) => {
-    return new Promise((res, rej) => {
-        const prefix = [
-            '\\', '|', '/', '-'
-        ];
+const execCommands = () => {
+  return execCommandPromise('npm i --save-dev @angularclass/hmr');
+};
 
-        let currentPrefixIndex = prefix.length;
+const execCommandPromise = command => {
+  return new Promise((res, rej) => {
+    const prefix = ['\\', '|', '/', '-'];
 
-        const interval = setInterval(() => {
-            currentPrefixIndex = ++currentPrefixIndex >= prefix.length ? 0 : currentPrefixIndex;
-            process.stdout.write(`${prefix[currentPrefixIndex]} Executing ${command}`);
-            process.stdout.write('\r');
-        }, 200)
+    let currentPrefixIndex = prefix.length;
 
-        const child = exec(command, (err, stdout, stderr) => {
-            clearInterval(interval);
-            if (err) {
-                process.stderr.write(`\nexec error: ${err}`);
-                rej(err);
-            }
-            process.stderr.write(`\n${stderr}`);
-            res();
-        });
+    const interval = setInterval(() => {
+      currentPrefixIndex = ++currentPrefixIndex >= prefix.length ? 0 : currentPrefixIndex;
+      process.stdout.write(`${prefix[currentPrefixIndex]} Executing ${command}`);
+      process.stdout.write('\r');
+    }, 200);
 
-        child.stdout.pipe(process.stdout);
+    const child = exec(command, (err, stdout, stderr) => {
+      clearInterval(interval);
+      if (err) {
+        process.stderr.write(`\nexec error: ${err}`);
+        rej(err);
+      }
+      process.stderr.write(`\n${stderr}`);
+      res();
     });
-}
+
+    child.stdout.pipe(process.stdout);
+  });
+};
 
 const createFiles = () => {
-    try {
-        fs.writeFileSync('src/hmr.ts', `import { NgModuleRef, ApplicationRef } from '@angular/core';
+  try {
+    fs.writeFileSync(
+      'src/hmr.ts',
+      `import { NgModuleRef, ApplicationRef } from '@angular/core';
 import { createNewHosts } from '@angularclass/hmr';
 
 export const hmrBootstrap = (
@@ -66,18 +66,21 @@ export const hmrBootstrap = (
     makeVisible();
   });
 };
-`);
-        process.stdout.write('\nFile src/hmr.ts created');
-    } catch (err) {
-        process.stderr.write('\nProblem with creating file src/hmr.ts');
-        process.stderr.write(`\n${err}`);
-        throw err;
-    }
+`
+    );
+    process.stdout.write('\nFile src/hmr.ts created');
+  } catch (err) {
+    process.stderr.write('\nProblem with creating file src/hmr.ts');
+    process.stderr.write(`\n${err}`);
+    throw err;
+  }
 };
 
 const updateMainTs = () => {
-    try {
-        fs.writeFileSync('src/main.ts', `import { enableProdMode } from '@angular/core';
+  try {
+    fs.writeFileSync(
+      'src/main.ts',
+      `import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { environment } from './environments/environment';
 import { hmrBootstrap } from './hmr';
@@ -96,65 +99,65 @@ if (environment.production) {
     console.log('Are you using the --hmr flag for ng serve?');
   }
 }
-`);
-        process.stdout.write('\nFile src/main.ts created');
-    } catch (err) {
-        process.stderr.write('\nProblem with updating file src/main.ts');
-        process.stderr.write(`\n${err}`);
-        throw err;
-    }
-}
+`
+    );
+    process.stdout.write('\nFile src/main.ts created');
+  } catch (err) {
+    process.stderr.write('\nProblem with updating file src/main.ts');
+    process.stderr.write(`\n${err}`);
+    throw err;
+  }
+};
 
 const updateAngular = () => {
-    const angular = JSON.parse(fs.readFileSync('angular.json', 'UTF-8'));
+  const angular = JSON.parse(fs.readFileSync('angular.json', 'UTF-8'));
 
-    let save = true;
-    const keys = Object.keys(angular.projects);
-    keys.forEach(key => {
-        try {
-            const serve = angular.projects[key].architect.serve;
-            if (serve) {
-                if (!serve.options) {
-                    serve.options = {};
-                }
-                serve.options.hmr = true;
-            }
-        } catch (e) {
-            save = false;
-            process.stderr.write(`\n${e.message}`);
+  let save = true;
+  const keys = Object.keys(angular.projects);
+  keys.forEach(key => {
+    try {
+      const serve = angular.projects[key].architect.serve;
+      if (serve) {
+        if (!serve.options) {
+          serve.options = {};
         }
-    });
-    if (save) {
-        try {
-            fs.writeFileSync('angular.json', JSON.stringify(angular, null, 2));
-            process.stdout.write('\nFile angular.json updated');
-        } catch (err) {
-            process.stderr.write('\nProblem with updating file angular.json');
-            process.stdout.write('\nYou can do it by yourself');
-            process.stdout.write('\nJust remove test section from all projects');
-            process.stderr.write(`\n${err}`);
-
-        }
+        serve.options.hmr = true;
+      }
+    } catch (e) {
+      save = false;
+      process.stderr.write(`\n${e.message}`);
     }
+  });
+  if (save) {
+    try {
+      fs.writeFileSync('angular.json', JSON.stringify(angular, null, 2));
+      process.stdout.write('\nFile angular.json updated');
+    } catch (err) {
+      process.stderr.write('\nProblem with updating file angular.json');
+      process.stdout.write('\nYou can do it by yourself');
+      process.stdout.write('\nJust remove test section from all projects');
+      process.stderr.write(`\n${err}`);
+    }
+  }
 };
 
 const updateTsConfigApp = () => {
-    const tsconfigApp = JSON.parse(fs.readFileSync('src/tsconfig.app.json', 'UTF-8'));
-    try {
-        tsconfigApp.compilerOptions.types.push('node');
-    } catch (e) {
-        tsconfigApp.compilerOptions.types = ['node'];
-    }
+  const tsconfigApp = JSON.parse(fs.readFileSync('tsconfig.app.json', 'UTF-8'));
+  try {
+    tsconfigApp.compilerOptions.types.push('node');
+  } catch (e) {
+    tsconfigApp.compilerOptions.types = ['node'];
+  }
 
-    try {
-        fs.writeFileSync('src/tsconfig.app.json', JSON.stringify(tsconfigApp, null, 2));
-        process.stdout.write('\nFile tsconfig.app.json updated');
-    } catch (err) {
-        process.stderr.write('\nProblem with updating file tsconfig.app.json');
-        process.stdout.write('\nYou can do it by yourself');
-        process.stdout.write('\nJust add "nodes" to compilerOptions.types');
-        process.stderr.write(`\n${err}`);
-    }
+  try {
+    fs.writeFileSync('tsconfig.app.json', JSON.stringify(tsconfigApp, null, 2));
+    process.stdout.write('\nFile tsconfig.app.json updated');
+  } catch (err) {
+    process.stderr.write('\nProblem with updating file tsconfig.app.json');
+    process.stdout.write('\nYou can do it by yourself');
+    process.stdout.write('\nJust add "nodes" to compilerOptions.types');
+    process.stderr.write(`\n${err}`);
+  }
 };
 
 main();
